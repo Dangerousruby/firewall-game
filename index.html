@@ -17,6 +17,7 @@ body {
   position: relative;
   width: 100vw;
   height: 100vh;
+  background-color: #0e0e16;
 }
 
 /* Character */
@@ -27,10 +28,11 @@ body {
   transform: translateX(-50%);
   height: 70vh;
   max-height: 600px;
+  opacity: 0;
   transition: opacity 0.3s ease;
 }
 
-/* Talk Bounce */
+/* Subtle Bounce */
 .character.talk {
   animation: subtleBounce 0.28s ease-out;
 }
@@ -74,7 +76,7 @@ body {
   border-color: transparent white transparent transparent;
 }
 
-/* Options Bar */
+/* Options */
 .options {
   position: absolute;
   bottom: 0;
@@ -87,7 +89,6 @@ body {
   flex-wrap: wrap;
 }
 
-/* Depth + Glow Buttons */
 .options button {
   background: linear-gradient(to bottom, #3a3a70, #2c2c4c);
   border: none;
@@ -96,12 +97,12 @@ body {
   cursor: pointer;
   font-size: 15px;
   border-radius: 6px;
-  box-shadow: 0 4px 0 #1a1a30, 0 0 8px rgba(100,100,255,0.2);
+  box-shadow: 0 4px 0 #1a1a30, 0 0 10px rgba(120,120,255,0.4);
   transition: all 0.15s ease;
 }
 
 .options button:hover {
-  box-shadow: 0 4px 0 #1a1a30, 0 0 14px rgba(120,120,255,0.6);
+  box-shadow: 0 4px 0 #1a1a30, 0 0 16px rgba(120,120,255,0.7);
 }
 
 .options button:active {
@@ -109,16 +110,7 @@ body {
   box-shadow: 0 0 6px rgba(120,120,255,0.4);
 }
 
-/* Infection Pulse */
-.infected {
-  animation: pulse 0.6s infinite alternate;
-}
-
-@keyframes pulse {
-  from { background-color: #0e0e16; }
-  to   { background-color: #320000; }
-}
-
+/* Popup */
 .popup {
   position: absolute;
   background: white;
@@ -135,7 +127,7 @@ body {
 <body>
 
 <div id="game">
-  <img id="character" class="character" src="images/trump.png">
+  <img id="character" class="character" src="">
   <div id="bubble" class="bubble"></div>
   <div id="options" class="options"></div>
 </div>
@@ -145,6 +137,17 @@ const bubble = document.getElementById("bubble");
 const options = document.getElementById("options");
 const game = document.getElementById("game");
 const sprite = document.getElementById("character");
+
+let currentTheme = "#4d79ff";
+
+/* ---------- THEME ---------- */
+
+function setTheme(color, bubbleColor) {
+  currentTheme = color;
+  bubble.style.background = bubbleColor;
+}
+
+/* ---------- SCENE ---------- */
 
 function setScene(text, choices) {
   sprite.classList.remove("talk");
@@ -162,117 +165,122 @@ function setScene(text, choices) {
     const btn = document.createElement("button");
     btn.innerText = choice.text;
     btn.onclick = choice.action;
+    btn.style.boxShadow = `0 4px 0 #1a1a30, 0 0 12px ${currentTheme}`;
     options.appendChild(btn);
   });
 }
 
-/* ---------------- TRUMP ---------------- */
+/* ---------- MENU ---------- */
+
+function showMenu() {
+  sprite.style.opacity = 0;
+  bubble.classList.remove("show");
+  options.innerHTML = "";
+
+  setTimeout(() => {
+    bubble.innerText = "Select a cybersecurity scenario:";
+    bubble.classList.add("show");
+
+    const characters = [
+      { name: "Trump - Authority Override", action: trumpStart },
+      { name: "Obama - Spoofed Portal", action: obamaStart },
+      { name: "Biden - Ignored Updates", action: bidenStart }
+    ];
+
+    characters.forEach(c => {
+      const btn = document.createElement("button");
+      btn.innerText = c.name;
+      btn.onclick = c.action;
+      options.appendChild(btn);
+    });
+  }, 200);
+}
+
+/* ---------- TRUMP ---------- */
 
 function trumpStart() {
   sprite.src = "images/trump.png";
+  sprite.style.opacity = 1;
+  setTheme("#ff4d4d", "#ffeaea");
+
   setScene(
-    "People are saying your firewall? Total disaster. Hackers are circling.",
+    "Immediate executive authorization required. Grant temporary elevated system access.",
     [
-      { text: "What kind of exposure?", action: trumpExplain },
-      { text: "Open the remediation portal.", action: trumpUrgency },
-      { text: "How did you detect this?", action: trumpAuthority }
+      { text: "What level of access?", action: trumpClarify },
+      { text: "Approve executive override.", action: trumpApprove },
+      { text: "Require identity verification.", action: () => secureRoute("Authority-based requests must always be verified.") }
     ]
   );
 }
 
-function trumpExplain() {
+function trumpClarify() {
   setScene(
-    "Your network ports are wide open. Very weak configuration.",
+    "Full administrative privileges. Standard procedure. We need speed.",
     [
-      { text: "Show me proof.", action: trumpProof },
-      { text: "Open the remediation portal.", action: trumpUrgency }
+      { text: "Grant elevated privileges.", action: infection },
+      { text: "Follow verification protocol.", action: () => secureRoute("Authority-based requests must always be verified.") }
     ]
   );
 }
 
-function trumpAuthority() {
+function trumpApprove() {
   setScene(
-    "Top monitoring systems. Flagged instantly.",
+    "Bypass standard review process immediately.",
     [
-      { text: "What scanner flagged it?", action: trumpProof },
-      { text: "Send the fix link.", action: trumpUrgency }
+      { text: "Authorize elevated access.", action: infection },
+      { text: "Confirm through secure channel.", action: () => secureRoute("Authority-based requests must always be verified.") }
     ]
   );
 }
 
-function trumpUrgency() {
-  setScene(
-    "Click this secure remediation link immediately.",
-    [
-      { text: "Enter admin credentials.", action: infection },
-      { text: "Inspect the link first.", action: secureRoute }
-    ]
-  );
-}
-
-function trumpProof() {
-  setScene(
-    "Look at this official dashboard. Red warnings everywhere.",
-    [
-      { text: "Log into dashboard.", action: infection },
-      { text: "Check the domain carefully.", action: secureRoute }
-    ]
-  );
-}
-
-/* ---------------- OBAMA ---------------- */
+/* ---------- OBAMA ---------- */
 
 function obamaStart() {
   sprite.src = "images/obama.png";
+  sprite.style.opacity = 1;
+  setTheme("#4d79ff", "#eaf0ff");
+
   setScene(
-    "Now, let me be clear... your login portal may not be what it appears to be.",
+    "Your login portal may not be what it appears to be.",
     [
-      { text: "What do you mean?", action: obamaExplain },
-      { text: "It looks official.", action: obamaSpoof },
-      { text: "How can I verify it?", action: obamaSecure }
+      { text: "Enter credentials anyway.", action: infection },
+      { text: "Inspect the URL carefully.", action: () => secureRoute("Professional design does not equal legitimacy. Always verify the URL.") }
     ]
   );
 }
 
-function obamaExplain() {
+/* ---------- BIDEN ---------- */
+
+function bidenStart() {
+  sprite.src = "images/biden.png";
+  sprite.style.opacity = 1;
+  setTheme("#f2c94c", "#fff8e6");
+
   setScene(
-    "Attackers often replicate legitimate websites... subtle changes in the URL.",
+    "The system's been fine for years. No rush on updates.",
     [
-      { text: "Show example.", action: obamaSpoof },
-      { text: "Check the address bar carefully.", action: secureRoute }
+      { text: "Postpone update.", action: infection },
+      { text: "Install security patch.", action: () => secureRoute("Delaying updates leaves systems vulnerable. Always apply patches promptly.") }
     ]
   );
 }
 
-function obamaSpoof() {
+/* ---------- SECURE ---------- */
+
+function secureRoute(message) {
+  game.style.backgroundColor = "#0e0e16";
+
   setScene(
-    "Take a closer look... does that domain spelling seem slightly altered?",
+    message || "Threat blocked. Good security practices prevented compromise.",
     [
-      { text: "Enter password anyway.", action: infection },
-      { text: "Compare domain spelling.", action: secureRoute }
+      { text: "Return to Menu", action: showMenu }
     ]
   );
 }
 
-function obamaSecure() {
-  secureRoute();
-}
-
-/* ---------------- COMMON ---------------- */
-
-function secureRoute() {
-  game.classList.remove("infected");
-  setScene(
-    "Threat blocked. Always verify URLs before entering credentials.",
-    [
-      { text: "Continue to Obama", action: obamaStart },
-      { text: "Restart Trump", action: trumpStart }
-    ]
-  );
-}
+/* ---------- INFECTION + MINI GAME ---------- */
 
 function infection() {
-  game.classList.add("infected");
   bubble.innerText = "SYSTEM INFECTED. Remove malicious popups!";
   bubble.classList.add("show");
   options.innerHTML = "";
@@ -285,15 +293,14 @@ function startPopupGame() {
 
   function spawnPopup() {
     if (cleared >= needed) {
-      game.classList.remove("infected");
       clearPopups();
-      secureRoute();
+      secureRoute("Threat removed. Attack contained.");
       return;
     }
 
     const popup = document.createElement("div");
     popup.className = "popup";
-    popup.innerText = "CRITICAL SECURITY WARNING!";
+    popup.innerText = "SECURITY ALERT!";
     popup.style.left = Math.random() * 75 + "%";
     popup.style.top = Math.random() * 60 + "%";
 
@@ -314,11 +321,9 @@ function startPopupGame() {
   spawnPopup();
 }
 
-function clearPopups() {
-  document.querySelectorAll(".popup").forEach(p => p.remove());
-}
+/* ---------- START ---------- */
 
-trumpStart();
+showMenu();
 </script>
 
 </body>
