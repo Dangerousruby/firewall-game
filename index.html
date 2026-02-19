@@ -20,8 +20,33 @@ body {
   background-color: #0e0e16;
 }
 
-/* Character */
-.character {
+/* MENU CHARACTERS */
+
+.menu-character {
+  position: absolute;
+  bottom: 10%;
+  height: 55vh;
+  max-height: 500px;
+  cursor: pointer;
+  opacity: 0.75;
+  transition: all 0.25s ease;
+}
+
+.menu-character:hover {
+  opacity: 1;
+  transform: translateY(-10px);
+  filter: drop-shadow(0 0 15px rgba(255,255,255,0.6));
+}
+
+/* Spread across screen */
+#menu-trump   { left: 5%; }
+#menu-obama   { left: 22%; }
+#menu-biden   { left: 39%; }
+#menu-epstein { left: 56%; }
+#menu-diddy   { left: 73%; }
+
+/* Active character */
+#activeCharacter {
   position: absolute;
   bottom: 10%;
   left: 50%;
@@ -32,33 +57,31 @@ body {
   transition: opacity 0.3s ease;
 }
 
-/* Subtle Bounce */
-.character.talk {
-  animation: subtleBounce 0.28s ease-out;
+/* Bounce */
+#activeCharacter.talk {
+  animation: bounce 0.25s ease-out;
 }
 
-@keyframes subtleBounce {
-  0%   { transform: translateX(-50%) translateY(0); }
-  40%  { transform: translateX(-50%) translateY(-5px); }
+@keyframes bounce {
+  0% { transform: translateX(-50%) translateY(0); }
+  40% { transform: translateX(-50%) translateY(-6px); }
   100% { transform: translateX(-50%) translateY(0); }
 }
 
-/* Speech Bubble */
+/* Bubble */
 .bubble {
   position: absolute;
   top: 18%;
   left: 60%;
   max-width: 420px;
-  background: white;
-  color: black;
   padding: 18px;
   border-radius: 12px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
   font-size: 16px;
   line-height: 1.4;
   opacity: 0;
   transform: translateY(8px);
   transition: opacity 0.2s ease, transform 0.2s ease;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 }
 
 .bubble.show {
@@ -66,17 +89,6 @@ body {
   transform: translateY(0);
 }
 
-.bubble::after {
-  content: "";
-  position: absolute;
-  left: -20px;
-  top: 40px;
-  border-width: 10px;
-  border-style: solid;
-  border-color: transparent white transparent transparent;
-}
-
-/* Options */
 .options {
   position: absolute;
   bottom: 0;
@@ -97,20 +109,13 @@ body {
   cursor: pointer;
   font-size: 15px;
   border-radius: 6px;
-  box-shadow: 0 4px 0 #1a1a30, 0 0 10px rgba(120,120,255,0.4);
   transition: all 0.15s ease;
 }
 
 .options button:hover {
-  box-shadow: 0 4px 0 #1a1a30, 0 0 16px rgba(120,120,255,0.7);
+  box-shadow: 0 0 16px rgba(255,255,255,0.6);
 }
 
-.options button:active {
-  transform: translateY(4px);
-  box-shadow: 0 0 6px rgba(120,120,255,0.4);
-}
-
-/* Popup */
 .popup {
   position: absolute;
   background: white;
@@ -127,27 +132,36 @@ body {
 <body>
 
 <div id="game">
-  <img id="character" class="character" src="">
+
+  <!-- MENU SPRITES -->
+  <img id="menu-trump" class="menu-character" src="images/trump.png" onclick="trumpStart()">
+  <img id="menu-obama" class="menu-character" src="images/obama.png" onclick="obamaStart()">
+  <img id="menu-biden" class="menu-character" src="images/biden.png" onclick="bidenStart()">
+  <img id="menu-epstein" class="menu-character" src="images/epstein.png" onclick="epsteinStart()">
+  <img id="menu-diddy" class="menu-character" src="images/diddy.png" onclick="diddyStart()">
+
+  <img id="activeCharacter" src="">
   <div id="bubble" class="bubble"></div>
   <div id="options" class="options"></div>
+
 </div>
 
 <script>
 const bubble = document.getElementById("bubble");
 const options = document.getElementById("options");
+const sprite = document.getElementById("activeCharacter");
+const menuSprites = document.querySelectorAll(".menu-character");
 const game = document.getElementById("game");
-const sprite = document.getElementById("character");
 
-let currentTheme = "#4d79ff";
+let currentTheme = "#ffffff";
 
-/* ---------- THEME ---------- */
+/* ---------- CORE ---------- */
 
-function setTheme(color, bubbleColor) {
+function setTheme(color, bubbleBg) {
   currentTheme = color;
-  bubble.style.background = bubbleColor;
+  bubble.style.background = bubbleBg;
+  bubble.style.color = "black";
 }
-
-/* ---------- SCENE ---------- */
 
 function setScene(text, choices) {
   sprite.classList.remove("talk");
@@ -165,102 +179,108 @@ function setScene(text, choices) {
     const btn = document.createElement("button");
     btn.innerText = choice.text;
     btn.onclick = choice.action;
-    btn.style.boxShadow = `0 4px 0 #1a1a30, 0 0 12px ${currentTheme}`;
+    btn.style.boxShadow = `0 0 14px ${currentTheme}`;
     options.appendChild(btn);
   });
 }
 
-/* ---------- MENU ---------- */
+function hideMenu() {
+  menuSprites.forEach(s => s.style.display = "none");
+}
 
 function showMenu() {
   sprite.style.opacity = 0;
   bubble.classList.remove("show");
   options.innerHTML = "";
+  menuSprites.forEach(s => s.style.display = "block");
 
-  setTimeout(() => {
-    bubble.innerText = "Select a cybersecurity scenario:";
-    bubble.classList.add("show");
-
-    const characters = [
-      { name: "Trump - Authority Override", action: trumpStart },
-      { name: "Obama - Spoofed Portal", action: obamaStart },
-      { name: "Biden - Ignored Updates", action: bidenStart }
-    ];
-
-    characters.forEach(c => {
-      const btn = document.createElement("button");
-      btn.innerText = c.name;
-      btn.onclick = c.action;
-      options.appendChild(btn);
-    });
-  }, 200);
+  bubble.innerText = "Select a cybersecurity scenario:";
+  bubble.style.background = "white";
+  bubble.style.color = "black";
+  bubble.classList.add("show");
 }
 
-/* ---------- TRUMP ---------- */
+/* ---------- TRUMP (Red) ---------- */
 
 function trumpStart() {
+  hideMenu();
   sprite.src = "images/trump.png";
   sprite.style.opacity = 1;
   setTheme("#ff4d4d", "#ffeaea");
 
   setScene(
-    "Immediate executive authorization required. Grant temporary elevated system access.",
+    "Executive override requested. Grant elevated system access.",
     [
-      { text: "What level of access?", action: trumpClarify },
-      { text: "Approve executive override.", action: trumpApprove },
-      { text: "Require identity verification.", action: () => secureRoute("Authority-based requests must always be verified.") }
+      { text: "Authorize access.", action: infection },
+      { text: "Verify identity first.", action: () => secureRoute("Always verify authority-based requests.") }
     ]
   );
 }
 
-function trumpClarify() {
-  setScene(
-    "Full administrative privileges. Standard procedure. We need speed.",
-    [
-      { text: "Grant elevated privileges.", action: infection },
-      { text: "Follow verification protocol.", action: () => secureRoute("Authority-based requests must always be verified.") }
-    ]
-  );
-}
-
-function trumpApprove() {
-  setScene(
-    "Bypass standard review process immediately.",
-    [
-      { text: "Authorize elevated access.", action: infection },
-      { text: "Confirm through secure channel.", action: () => secureRoute("Authority-based requests must always be verified.") }
-    ]
-  );
-}
-
-/* ---------- OBAMA ---------- */
+/* ---------- OBAMA (Blue) ---------- */
 
 function obamaStart() {
+  hideMenu();
   sprite.src = "images/obama.png";
   sprite.style.opacity = 1;
   setTheme("#4d79ff", "#eaf0ff");
 
   setScene(
-    "Your login portal may not be what it appears to be.",
+    "That login portal may not be legitimate.",
     [
-      { text: "Enter credentials anyway.", action: infection },
-      { text: "Inspect the URL carefully.", action: () => secureRoute("Professional design does not equal legitimacy. Always verify the URL.") }
+      { text: "Enter credentials.", action: infection },
+      { text: "Inspect URL carefully.", action: () => secureRoute("Always verify the domain before logging in.") }
     ]
   );
 }
 
-/* ---------- BIDEN ---------- */
+/* ---------- BIDEN (Gold) ---------- */
 
 function bidenStart() {
+  hideMenu();
   sprite.src = "images/biden.png";
   sprite.style.opacity = 1;
   setTheme("#f2c94c", "#fff8e6");
 
   setScene(
-    "The system's been fine for years. No rush on updates.",
+    "System update available. Install now?",
     [
       { text: "Postpone update.", action: infection },
-      { text: "Install security patch.", action: () => secureRoute("Delaying updates leaves systems vulnerable. Always apply patches promptly.") }
+      { text: "Install patch.", action: () => secureRoute("Delaying updates increases vulnerability risk.") }
+    ]
+  );
+}
+
+/* ---------- EPSTEIN (Pink – USB Malware) ---------- */
+
+function epsteinStart() {
+  hideMenu();
+  sprite.src = "images/epstein.png";
+  sprite.style.opacity = 1;
+  setTheme("#ff66cc", "#ffe6f4");
+
+  setScene(
+    "I found this USB drive with some files. Plug it in and take a look.",
+    [
+      { text: "Plug it in immediately.", action: infection },
+      { text: "Scan the USB first.", action: () => secureRoute("Always scan removable media before accessing files.") }
+    ]
+  );
+}
+
+/* ---------- DIDY (Green – Credit Card Phish) ---------- */
+
+function diddyStart() {
+  hideMenu();
+  sprite.src = "images/diddy.png";
+  sprite.style.opacity = 1;
+  setTheme("#2ecc71", "#e8fff1");
+
+  setScene(
+    "Exclusive premium security package. Just confirm your card details.",
+    [
+      { text: "Enter card information.", action: infection },
+      { text: "Verify payment gateway security.", action: () => secureRoute("Never enter financial data without verifying site security.") }
     ]
   );
 }
@@ -268,17 +288,16 @@ function bidenStart() {
 /* ---------- SECURE ---------- */
 
 function secureRoute(message) {
-  game.style.backgroundColor = "#0e0e16";
-
+  clearPopups();
   setScene(
-    message || "Threat blocked. Good security practices prevented compromise.",
+    message || "Threat prevented.",
     [
       { text: "Return to Menu", action: showMenu }
     ]
   );
 }
 
-/* ---------- INFECTION + MINI GAME ---------- */
+/* ---------- INFECTION MINI GAME ---------- */
 
 function infection() {
   bubble.innerText = "SYSTEM INFECTED. Remove malicious popups!";
@@ -321,7 +340,11 @@ function startPopupGame() {
   spawnPopup();
 }
 
-/* ---------- START ---------- */
+function clearPopups() {
+  document.querySelectorAll(".popup").forEach(p => p.remove());
+}
+
+/* ---------- INIT ---------- */
 
 showMenu();
 </script>
