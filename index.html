@@ -20,7 +20,7 @@ body {
   background-color: #0e0e16;
 }
 
-/* MENU CHARACTERS */
+/* ---------- MENU CHARACTERS ---------- */
 
 .menu-character {
   position: absolute;
@@ -38,14 +38,14 @@ body {
   filter: drop-shadow(0 0 15px rgba(255,255,255,0.6));
 }
 
-/* Spread across screen */
 #menu-trump   { left: 5%; }
 #menu-obama   { left: 22%; }
 #menu-biden   { left: 39%; }
 #menu-epstein { left: 56%; }
 #menu-diddy   { left: 73%; }
 
-/* Active character */
+/* ---------- ACTIVE CHARACTER ---------- */
+
 #activeCharacter {
   position: absolute;
   bottom: 10%;
@@ -57,7 +57,6 @@ body {
   transition: opacity 0.3s ease;
 }
 
-/* Bounce */
 #activeCharacter.talk {
   animation: bounce 0.25s ease-out;
 }
@@ -68,7 +67,8 @@ body {
   100% { transform: translateX(-50%) translateY(0); }
 }
 
-/* Bubble */
+/* ---------- SPEECH BUBBLE ---------- */
+
 .bubble {
   position: absolute;
   top: 18%;
@@ -88,6 +88,8 @@ body {
   opacity: 1;
   transform: translateY(0);
 }
+
+/* ---------- OPTIONS ---------- */
 
 .options {
   position: absolute;
@@ -116,15 +118,37 @@ body {
   box-shadow: 0 0 16px rgba(255,255,255,0.6);
 }
 
+/* ---------- REALISTIC POPUPS ---------- */
+
 .popup {
   position: absolute;
-  background: white;
-  color: black;
-  padding: 12px;
-  border: 2px solid red;
-  font-size: 14px;
+  width: 260px;
+  background: #f3f3f3;
+  border: 1px solid #999;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+  font-family: Arial, sans-serif;
+  animation: shake 0.25s ease-in-out infinite alternate;
   cursor: pointer;
-  box-shadow: 0 0 12px rgba(255,0,0,0.6);
+}
+
+.popup-header {
+  background: linear-gradient(to right, #d00000, #ff4d4d);
+  color: white;
+  padding: 6px 8px;
+  font-size: 13px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.popup-body {
+  padding: 12px;
+  font-size: 13px;
+  color: black;
+}
+
+@keyframes shake {
+  from { transform: translateX(-2px); }
+  to { transform: translateX(2px); }
 }
 </style>
 </head>
@@ -133,7 +157,7 @@ body {
 
 <div id="game">
 
-  <!-- MENU SPRITES -->
+  <!-- MENU -->
   <img id="menu-trump" class="menu-character" src="images/trump.png" onclick="trumpStart()">
   <img id="menu-obama" class="menu-character" src="images/obama.png" onclick="obamaStart()">
   <img id="menu-biden" class="menu-character" src="images/biden.png" onclick="bidenStart()">
@@ -175,6 +199,9 @@ function setScene(text, choices) {
 
   options.innerHTML = "";
 
+  // Shuffle answer order
+  choices.sort(() => Math.random() - 0.5);
+
   choices.forEach(choice => {
     const btn = document.createElement("button");
     btn.innerText = choice.text;
@@ -196,11 +223,10 @@ function showMenu() {
 
   bubble.innerText = "Select a cybersecurity scenario:";
   bubble.style.background = "white";
-  bubble.style.color = "black";
   bubble.classList.add("show");
 }
 
-/* ---------- TRUMP (Red) ---------- */
+/* ---------- CHARACTERS ---------- */
 
 function trumpStart() {
   hideMenu();
@@ -217,8 +243,6 @@ function trumpStart() {
   );
 }
 
-/* ---------- OBAMA (Blue) ---------- */
-
 function obamaStart() {
   hideMenu();
   sprite.src = "images/obama.png";
@@ -233,8 +257,6 @@ function obamaStart() {
     ]
   );
 }
-
-/* ---------- BIDEN (Gold) ---------- */
 
 function bidenStart() {
   hideMenu();
@@ -251,8 +273,6 @@ function bidenStart() {
   );
 }
 
-/* ---------- EPSTEIN (Pink – USB Malware) ---------- */
-
 function epsteinStart() {
   hideMenu();
   sprite.src = "images/epstein.png";
@@ -260,15 +280,13 @@ function epsteinStart() {
   setTheme("#ff66cc", "#ffe6f4");
 
   setScene(
-    "I found this USB drive with some files. Plug it in and take a look.",
+    "I found this USB drive. Plug it in and see what's inside.",
     [
       { text: "Plug it in immediately.", action: infection },
-      { text: "Scan the USB first.", action: () => secureRoute("Always scan removable media before accessing files.") }
+      { text: "Scan the USB first.", action: () => secureRoute("Always scan removable media before opening files.") }
     ]
   );
 }
-
-/* ---------- DIDY (Green – Credit Card Phish) ---------- */
 
 function diddyStart() {
   hideMenu();
@@ -277,10 +295,10 @@ function diddyStart() {
   setTheme("#2ecc71", "#e8fff1");
 
   setScene(
-    "Exclusive premium security package. Just confirm your card details.",
+    "Premium security upgrade. Just confirm your credit card details.",
     [
-      { text: "Enter card information.", action: infection },
-      { text: "Verify payment gateway security.", action: () => secureRoute("Never enter financial data without verifying site security.") }
+      { text: "Enter card details.", action: infection },
+      { text: "Verify payment security.", action: () => secureRoute("Never enter financial information without verifying the site.") }
     ]
   );
 }
@@ -319,9 +337,18 @@ function startPopupGame() {
 
     const popup = document.createElement("div");
     popup.className = "popup";
-    popup.innerText = "SECURITY ALERT!";
-    popup.style.left = Math.random() * 75 + "%";
+    popup.style.left = Math.random() * 70 + "%";
     popup.style.top = Math.random() * 60 + "%";
+
+    popup.innerHTML = `
+      <div class="popup-header">
+        Security Warning
+        <span>✖</span>
+      </div>
+      <div class="popup-body">
+        ${randomPopupMessage()}
+      </div>
+    `;
 
     popup.onclick = () => {
       popup.remove();
@@ -332,12 +359,23 @@ function startPopupGame() {
 
     setTimeout(() => {
       if (popup.parentNode) popup.remove();
-    }, 2000);
+    }, 2500);
 
     setTimeout(spawnPopup, 700);
   }
 
   spawnPopup();
+}
+
+function randomPopupMessage() {
+  const messages = [
+    "Your system is infected! Click to repair immediately.",
+    "Critical vulnerability detected.",
+    "Unauthorized access attempt detected.",
+    "Firewall failure. Immediate action required.",
+    "Suspicious activity detected in system files."
+  ];
+  return messages[Math.floor(Math.random() * messages.length)];
 }
 
 function clearPopups() {
