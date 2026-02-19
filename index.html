@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Firewall of the Heart.exe</title>
+
+<style>
+body {
+  margin: 0;
+  background: #0e0e16;
+  font-family: Georgia, serif;
+  overflow: hidden;
+  color: white;
+}
+
+#game {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Character */
+.character {
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 70vh;
+  max-height: 600px;
+  transition: opacity 0.3s ease;
+}
+
+/* Talk Bounce */
+.character.talk {
+  animation: subtleBounce 0.28s ease-out;
+}
+
+@keyframes subtleBounce {
+  0%   { transform: translateX(-50%) translateY(0); }
+  40%  { transform: translateX(-50%) translateY(-5px); }
+  100% { transform: translateX(-50%) translateY(0); }
+}
+
+/* Speech Bubble */
+.bubble {
+  position: absolute;
+  top: 18%;
+  left: 60%;
+  max-width: 420px;
+  background: white;
+  color: black;
+  padding: 18px;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+  font-size: 16px;
+  line-height: 1.4;
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.bubble.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.bubble::after {
+  content: "";
+  position: absolute;
+  left: -20px;
+  top: 40px;
+  border-width: 10px;
+  border-style: solid;
+  border-color: transparent white transparent transparent;
+}
+
+/* Options Bar */
+.options {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  background: rgba(20,20,35,0.95);
+  padding: 18px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* Depth + Glow Buttons */
+.options button {
+  background: linear-gradient(to bottom, #3a3a70, #2c2c4c);
+  border: none;
+  padding: 12px 18px;
+  color: white;
+  cursor: pointer;
+  font-size: 15px;
+  border-radius: 6px;
+  box-shadow: 0 4px 0 #1a1a30, 0 0 8px rgba(100,100,255,0.2);
+  transition: all 0.15s ease;
+}
+
+.options button:hover {
+  box-shadow: 0 4px 0 #1a1a30, 0 0 14px rgba(120,120,255,0.6);
+}
+
+.options button:active {
+  transform: translateY(4px);
+  box-shadow: 0 0 6px rgba(120,120,255,0.4);
+}
+
+/* Infection Pulse */
+.infected {
+  animation: pulse 0.6s infinite alternate;
+}
+
+@keyframes pulse {
+  from { background-color: #0e0e16; }
+  to   { background-color: #320000; }
+}
+
+.popup {
+  position: absolute;
+  background: white;
+  color: black;
+  padding: 12px;
+  border: 2px solid red;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 0 12px rgba(255,0,0,0.6);
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+  <img id="character" class="character" src="images/trump.png">
+  <div id="bubble" class="bubble"></div>
+  <div id="options" class="options"></div>
+</div>
+
+<script>
+const bubble = document.getElementById("bubble");
+const options = document.getElementById("options");
+const game = document.getElementById("game");
+const sprite = document.getElementById("character");
+
+function setScene(text, choices) {
+  sprite.classList.remove("talk");
+  void sprite.offsetWidth;
+  sprite.classList.add("talk");
+
+  bubble.classList.remove("show");
+  void bubble.offsetWidth;
+  bubble.innerText = text;
+  bubble.classList.add("show");
+
+  options.innerHTML = "";
+
+  choices.forEach(choice => {
+    const btn = document.createElement("button");
+    btn.innerText = choice.text;
+    btn.onclick = choice.action;
+    options.appendChild(btn);
+  });
+}
+
+/* ---------------- TRUMP ---------------- */
+
+function trumpStart() {
+  sprite.src = "images/trump.png";
+  setScene(
+    "People are saying your firewall? Total disaster. Hackers are circling.",
+    [
+      { text: "What kind of exposure?", action: trumpExplain },
+      { text: "Open the remediation portal.", action: trumpUrgency },
+      { text: "How did you detect this?", action: trumpAuthority }
+    ]
+  );
+}
+
+function trumpExplain() {
+  setScene(
+    "Your network ports are wide open. Very weak configuration.",
+    [
+      { text: "Show me proof.", action: trumpProof },
+      { text: "Open the remediation portal.", action: trumpUrgency }
+    ]
+  );
+}
+
+function trumpAuthority() {
+  setScene(
+    "Top monitoring systems. Flagged instantly.",
+    [
+      { text: "What scanner flagged it?", action: trumpProof },
+      { text: "Send the fix link.", action: trumpUrgency }
+    ]
+  );
+}
+
+function trumpUrgency() {
+  setScene(
+    "Click this secure remediation link immediately.",
+    [
+      { text: "Enter admin credentials.", action: infection },
+      { text: "Inspect the link first.", action: secureRoute }
+    ]
+  );
+}
+
+function trumpProof() {
+  setScene(
+    "Look at this official dashboard. Red warnings everywhere.",
+    [
+      { text: "Log into dashboard.", action: infection },
+      { text: "Check the domain carefully.", action: secureRoute }
+    ]
+  );
+}
+
+/* ---------------- OBAMA ---------------- */
+
+function obamaStart() {
+  sprite.src = "images/obama.png";
+  setScene(
+    "Now, let me be clear... your login portal may not be what it appears to be.",
+    [
+      { text: "What do you mean?", action: obamaExplain },
+      { text: "It looks official.", action: obamaSpoof },
+      { text: "How can I verify it?", action: obamaSecure }
+    ]
+  );
+}
+
+function obamaExplain() {
+  setScene(
+    "Attackers often replicate legitimate websites... subtle changes in the URL.",
+    [
+      { text: "Show example.", action: obamaSpoof },
+      { text: "Check the address bar carefully.", action: secureRoute }
+    ]
+  );
+}
+
+function obamaSpoof() {
+  setScene(
+    "Take a closer look... does that domain spelling seem slightly altered?",
+    [
+      { text: "Enter password anyway.", action: infection },
+      { text: "Compare domain spelling.", action: secureRoute }
+    ]
+  );
+}
+
+function obamaSecure() {
+  secureRoute();
+}
+
+/* ---------------- COMMON ---------------- */
+
+function secureRoute() {
+  game.classList.remove("infected");
+  setScene(
+    "Threat blocked. Always verify URLs before entering credentials.",
+    [
+      { text: "Continue to Obama", action: obamaStart },
+      { text: "Restart Trump", action: trumpStart }
+    ]
+  );
+}
+
+function infection() {
+  game.classList.add("infected");
+  bubble.innerText = "SYSTEM INFECTED. Remove malicious popups!";
+  bubble.classList.add("show");
+  options.innerHTML = "";
+  startPopupGame();
+}
+
+function startPopupGame() {
+  let cleared = 0;
+  const needed = 6;
+
+  function spawnPopup() {
+    if (cleared >= needed) {
+      game.classList.remove("infected");
+      clearPopups();
+      secureRoute();
+      return;
+    }
+
+    const popup = document.createElement("div");
+    popup.className = "popup";
+    popup.innerText = "CRITICAL SECURITY WARNING!";
+    popup.style.left = Math.random() * 75 + "%";
+    popup.style.top = Math.random() * 60 + "%";
+
+    popup.onclick = () => {
+      popup.remove();
+      cleared++;
+    };
+
+    game.appendChild(popup);
+
+    setTimeout(() => {
+      if (popup.parentNode) popup.remove();
+    }, 2000);
+
+    setTimeout(spawnPopup, 700);
+  }
+
+  spawnPopup();
+}
+
+function clearPopups() {
+  document.querySelectorAll(".popup").forEach(p => p.remove());
+}
+
+trumpStart();
+</script>
+
+</body>
+</html>
