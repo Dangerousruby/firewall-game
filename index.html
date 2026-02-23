@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Firewall game.exe</title>
+<title>Firewall Game</title>
 
 <style>
 body {
@@ -17,16 +17,15 @@ body {
   position: relative;
   width: 100vw;
   height: 100vh;
-  background-color: #0e0e16;
 }
 
-/* ---------- MENU CHARACTERS ---------- */
+/* ---------- MENU SPRITES ---------- */
 
 .menu-character {
   position: absolute;
-  bottom: 10%;
-  height: 55vh;
-  max-height: 500px;
+  bottom: 12%;
+  height: 45vh;            /* SHRUNK */
+  max-height: 420px;       /* SHRUNK */
   cursor: pointer;
   opacity: 0.75;
   transition: all 0.25s ease;
@@ -34,15 +33,15 @@ body {
 
 .menu-character:hover {
   opacity: 1;
-  transform: translateY(-10px);
-  filter: drop-shadow(0 0 15px rgba(255,255,255,0.6));
+  transform: translateY(-8px);
+  filter: drop-shadow(0 0 12px rgba(255,255,255,0.6));
 }
 
-#menu-trump   { left: 5%; }
-#menu-obama   { left: 22%; }
-#menu-biden   { left: 39%; }
-#menu-epstein { left: 56%; }
-#menu-diddy   { left: 73%; }
+#menu-trump   { left: 6%; }
+#menu-obama   { left: 24%; }
+#menu-biden   { left: 42%; }
+#menu-epstein { left: 60%; }
+#menu-diddy   { left: 78%; }
 
 /* ---------- ACTIVE CHARACTER ---------- */
 
@@ -51,8 +50,8 @@ body {
   bottom: 10%;
   left: 50%;
   transform: translateX(-50%);
-  height: 70vh;
-  max-height: 600px;
+  height: 65vh;
+  max-height: 560px;
   opacity: 0;
   transition: opacity 0.3s ease;
 }
@@ -63,7 +62,7 @@ body {
 
 @keyframes bounce {
   0% { transform: translateX(-50%) translateY(0); }
-  40% { transform: translateX(-50%) translateY(-6px); }
+  40% { transform: translateX(-50%) translateY(-5px); }
   100% { transform: translateX(-50%) translateY(0); }
 }
 
@@ -77,7 +76,7 @@ body {
   padding: 18px;
   border-radius: 12px;
   font-size: 16px;
-  line-height: 1.4;
+  line-height: 1.5;
   opacity: 0;
   transform: translateY(8px);
   transition: opacity 0.2s ease, transform 0.2s ease;
@@ -199,7 +198,6 @@ function setScene(text, choices) {
 
   options.innerHTML = "";
 
-  // Shuffle answer order
   choices.sort(() => Math.random() - 0.5);
 
   choices.forEach(choice => {
@@ -226,7 +224,7 @@ function showMenu() {
   bubble.classList.add("show");
 }
 
-/* ---------- CHARACTERS ---------- */
+/* ---------- DIALOGUE EXPANSION ---------- */
 
 function trumpStart() {
   hideMenu();
@@ -235,10 +233,10 @@ function trumpStart() {
   setTheme("#ff4d4d", "#ffeaea");
 
   setScene(
-    "Executive override requested. Grant elevated system access.",
+    "An urgent executive override request has just come through. It claims to be from upper management demanding immediate elevated system access to prevent a 'major disruption.'",
     [
-      { text: "Authorize access.", action: infection },
-      { text: "Verify identity first.", action: () => secureRoute("Always verify authority-based requests.") }
+      { text: "Grant the requested elevated access immediately.", action: infection },
+      { text: "Verify the sender through official internal channels.", action: () => secureRoute("Even high-level requests must be independently verified.") }
     ]
   );
 }
@@ -250,10 +248,10 @@ function obamaStart() {
   setTheme("#4d79ff", "#eaf0ff");
 
   setScene(
-    "That login portal may not be legitimate.",
+    "You receive a professional-looking email stating your organization’s login portal has been upgraded. It includes a link that appears legitimate at first glance.",
     [
-      { text: "Enter credentials.", action: infection },
-      { text: "Inspect URL carefully.", action: () => secureRoute("Always verify the domain before logging in.") }
+      { text: "Click the link and log in as requested.", action: infection },
+      { text: "Carefully inspect the URL for subtle misspellings.", action: () => secureRoute("Phishing sites often mimic real domains with small alterations.") }
     ]
   );
 }
@@ -265,10 +263,10 @@ function bidenStart() {
   setTheme("#f2c94c", "#fff8e6");
 
   setScene(
-    "System update available. Install now?",
+    "Your system displays a notification: critical security update available. It mentions patches for newly discovered vulnerabilities.",
     [
-      { text: "Postpone update.", action: infection },
-      { text: "Install patch.", action: () => secureRoute("Delaying updates increases vulnerability risk.") }
+      { text: "Delay the update until later.", action: infection },
+      { text: "Install the security patch now.", action: () => secureRoute("Unpatched systems are a common entry point for attackers.") }
     ]
   );
 }
@@ -280,10 +278,10 @@ function epsteinStart() {
   setTheme("#ff66cc", "#ffe6f4");
 
   setScene(
-    "I found this USB drive. Plug it in and see what's inside.",
+    "A USB drive is found in the office parking lot. A label on it reads 'Confidential – Executive Files.'",
     [
-      { text: "Plug it in immediately.", action: infection },
-      { text: "Scan the USB first.", action: () => secureRoute("Always scan removable media before opening files.") }
+      { text: "Plug it into your workstation to inspect the files.", action: infection },
+      { text: "Report it and scan it in a controlled environment.", action: () => secureRoute("Unknown removable media can contain hidden malware.") }
     ]
   );
 }
@@ -295,10 +293,10 @@ function diddyStart() {
   setTheme("#2ecc71", "#e8fff1");
 
   setScene(
-    "Premium security upgrade. Just confirm your credit card details.",
+    "You receive an offer for an exclusive premium cybersecurity package. The site requests your credit card details to activate the 'discounted security service.'",
     [
-      { text: "Enter card details.", action: infection },
-      { text: "Verify payment security.", action: () => secureRoute("Never enter financial information without verifying the site.") }
+      { text: "Enter your payment details to secure the deal.", action: infection },
+      { text: "Verify the legitimacy of the payment processor first.", action: () => secureRoute("Always confirm secure payment gateways before entering financial information.") }
     ]
   );
 }
@@ -389,4 +387,3 @@ showMenu();
 
 </body>
 </html>
-
