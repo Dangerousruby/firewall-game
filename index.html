@@ -24,8 +24,8 @@ body {
 .menu-character {
   position: absolute;
   bottom: 12%;
-  height: 45vh;            /* SHRUNK */
-  max-height: 420px;       /* SHRUNK */
+  height: 45vh;
+  max-height: 420px;
   cursor: pointer;
   opacity: 0.75;
   transition: all 0.25s ease;
@@ -198,6 +198,7 @@ function setScene(text, choices) {
 
   options.innerHTML = "";
 
+  // Randomize answer positions
   choices.sort(() => Math.random() - 0.5);
 
   choices.forEach(choice => {
@@ -221,10 +222,11 @@ function showMenu() {
 
   bubble.innerText = "Select a cybersecurity scenario:";
   bubble.style.background = "white";
+  bubble.style.color = "black";
   bubble.classList.add("show");
 }
 
-/* ---------- DIALOGUE EXPANSION ---------- */
+/* ---------- CHARACTERS ---------- */
 
 function trumpStart() {
   hideMenu();
@@ -233,10 +235,10 @@ function trumpStart() {
   setTheme("#ff4d4d", "#ffeaea");
 
   setScene(
-    "An urgent executive override request has just come through. It claims to be from upper management demanding immediate elevated system access to prevent a 'major disruption.'",
+    "We’ve got a major situation. Huge. An executive override request just came in demanding immediate elevated access.",
     [
-      { text: "Grant the requested elevated access immediately.", action: infection },
-      { text: "Verify the sender through official internal channels.", action: () => secureRoute("Even high-level requests must be independently verified.") }
+      { text: "Grant the override immediately.", action: infection },
+      { text: "Verify the request through official channels first.", action: () => secureRoute("High-pressure authority requests are common in Business Email Compromise attacks.") }
     ]
   );
 }
@@ -248,10 +250,10 @@ function obamaStart() {
   setTheme("#4d79ff", "#eaf0ff");
 
   setScene(
-    "You receive a professional-looking email stating your organization’s login portal has been upgraded. It includes a link that appears legitimate at first glance.",
+    "Now, let me be clear... a login page can look official while hiding a subtle domain change.",
     [
-      { text: "Click the link and log in as requested.", action: infection },
-      { text: "Carefully inspect the URL for subtle misspellings.", action: () => secureRoute("Phishing sites often mimic real domains with small alterations.") }
+      { text: "Trust the page and log in.", action: infection },
+      { text: "Inspect the domain carefully.", action: () => secureRoute("Phishing relies on subtle URL manipulation.") }
     ]
   );
 }
@@ -263,10 +265,10 @@ function bidenStart() {
   setTheme("#f2c94c", "#fff8e6");
 
   setScene(
-    "Your system displays a notification: critical security update available. It mentions patches for newly discovered vulnerabilities.",
+    "Look, the system’s been running fine for years. This update can probably wait.",
     [
-      { text: "Delay the update until later.", action: infection },
-      { text: "Install the security patch now.", action: () => secureRoute("Unpatched systems are a common entry point for attackers.") }
+      { text: "Delay the update.", action: infection },
+      { text: "Install the security patch now.", action: () => secureRoute("Unpatched systems are prime targets for exploitation.") }
     ]
   );
 }
@@ -278,10 +280,10 @@ function epsteinStart() {
   setTheme("#ff66cc", "#ffe6f4");
 
   setScene(
-    "A USB drive is found in the office parking lot. A label on it reads 'Confidential – Executive Files.'",
+    "I’ve got something interesting on this USB drive. Exclusive files. Plug it in and take a look.",
     [
-      { text: "Plug it into your workstation to inspect the files.", action: infection },
-      { text: "Report it and scan it in a controlled environment.", action: () => secureRoute("Unknown removable media can contain hidden malware.") }
+      { text: "Plug in the USB.", action: infection },
+      { text: "Scan it in a secure environment first.", action: () => secureRoute("Unknown removable media can contain hidden malware payloads.") }
     ]
   );
 }
@@ -293,10 +295,10 @@ function diddyStart() {
   setTheme("#2ecc71", "#e8fff1");
 
   setScene(
-    "You receive an offer for an exclusive premium cybersecurity package. The site requests your credit card details to activate the 'discounted security service.'",
+    "Premium protection. VIP security access. Just confirm your credit card details to activate.",
     [
-      { text: "Enter your payment details to secure the deal.", action: infection },
-      { text: "Verify the legitimacy of the payment processor first.", action: () => secureRoute("Always confirm secure payment gateways before entering financial information.") }
+      { text: "Enter credit card information.", action: infection },
+      { text: "Verify payment security first.", action: () => secureRoute("Financial phishing relies on urgency and exclusivity tactics.") }
     ]
   );
 }
